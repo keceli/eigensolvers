@@ -1,0 +1,33 @@
+# To help simplify including Elemental in external projects
+# TODO: Complain if Qt5 was used
+
+EL_INC = /home/keceli/lib/Elemental/build3/include
+EL_LIB = /home/keceli/lib/Elemental/build3/lib
+
+CC = /home/projects/llvm/wbin/bgclang
+CXX = /home/projects/llvm/wbin/bgclang++11
+CXX_FLAGS = -O3 -std=c++11 
+
+MATH_LIBS =  -L/soft/libraries/essl/current/essl/5.1/lib64 -lesslbg -L/soft/libraries/alcf/current/xl/LAPACK/lib -llapack -L/soft/libraries/essl/current/essl/5.1/lib64 -lesslbg -L/soft/compilers/ibmcmp-aug2014/xlf/bg/14.1/bglib64 -lxlf90_r -L/soft/compilers/ibmcmp-aug2014/xlsmp/bg/3.1/bglib64 -lxlomp_ser -lxlopt -lxlfmath -lxl -lpthread -ldl -Wl,--allow-multiple-definition
+
+MPI_CXX_COMPILE_FLAGS = 
+MPI_CXX_LINK_FLAGS = -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/sys/lib -L/bgsys/drivers/ppcfloor/spi/lib
+MPI_CXX_INCSTRING =  -I/bgsys/drivers/ppcfloor/comm/include
+MPI_CXX_LIBSTRING =  -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/sys/lib -L/bgsys/drivers/ppcfloor/spi/lib -lmpichcxx-gcc -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/sys/lib -L/bgsys/drivers/ppcfloor/spi/lib   -lmpich-gcc -lopa-gcc -lmpl-gcc -lpami-gcc -lSPI -lSPI_cnk -lrt -lpthread -lstdc++ -lpthread
+
+EL_LINK_FLAGS = -L${EL_LIB} ${MPI_CXX_LINK_FLAGS}
+
+THREAD_INIT = -fopenmp
+PMRRR_LIBS = -lpmrrr ${THREAD_INIT}
+
+# Attempt to add Qt5 support if needed
+EL_HAVE_QT5 = FALSE
+ifeq (${EL_HAVE_QT5},TRUE)
+  EL_COMPILE_FLAGS = ${CXX_FLAGS} -I${EL_INC} ${MPI_CXX_INCSTRING} \
+                         
+  EL_LIBS = -lEl ${PMRRR_LIBS} ${MATH_LIBS} ${MPI_CXX_LIBSTRING} \
+              -L -lQt5Widgets -lQt5Gui -lQt5Core
+else
+  EL_COMPILE_FLAGS = ${CXX_FLAGS} -I${EL_INC} ${MPI_CXX_INCSTRING}
+  EL_LIBS = -lEl ${PMRRR_LIBS} ${MATH_LIBS} ${MPI_CXX_LIBSTRING}
+endif
