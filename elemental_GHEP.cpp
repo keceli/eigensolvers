@@ -41,8 +41,8 @@ int main( int argc, char* argv[] )
 		}
 		else
 		{
-			//OneTwoOne( A, n );
-			HermitianUniformSpectrum( A, n );
+			OneTwoOne( A, n );
+		//	HermitianUniformSpectrum( A, n );
 			Identity( B, n, n );
 		}
 		mpi::Barrier( g.Comm() );
@@ -70,6 +70,7 @@ int main( int argc, char* argv[] )
 		const Int sortInt = 2;
 		const SortType sort = static_cast<SortType>(sortInt);
 		HermitianEigCtrl<double> ctrl;
+		ctrl.timeStages=true;
 		if( g.Rank() == 0 )
 		{
 			std::cout << "  Solving matrix pencil..." << std::endl;
