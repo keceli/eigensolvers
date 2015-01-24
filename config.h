@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2009-2013, Jack Poulson
+   Copyright (c) 2009-2015, Jack Poulson
    All rights reserved.
 
    This file is part of Elemental and is under the BSD 2-Clause License, 
@@ -10,34 +10,34 @@
 #define EL_CONFIG_H
 
 /* Build type and version information */
-#define EL_GIT_SHA1 "92c9ddf77c8a759ffeede62d912a98535a5deb8f"
+#define EL_GIT_SHA1 "99f7e8d7d48c298ca20629c9ec1829041d4a84be"
 #define EL_VERSION_MAJOR "0"
-#define EL_VERSION_MINOR "85-dev"
+#define EL_VERSION_MINOR "86-dev"
 #define EL_CMAKE_BUILD_TYPE "PureRelease"
 #define EL_RELEASE
+
+#define EL_MPI_LINK_FLAGS      "-L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/spi/lib"
 
 /* C compiler info */
 #define EL_CMAKE_C_COMPILER    "/home/projects/llvm/wbin/bgclang"
 #define EL_MPI_C_COMPILER      "/home/projects/llvm/mpi/bgclang/bin/mpiclang"
 #define EL_MPI_C_INCLUDE_PATH  "/bgsys/drivers/ppcfloor/comm/include"
 #define EL_MPI_C_COMPILE_FLAGS ""
-#define EL_MPI_C_LINK_FLAGS    "-L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/sys/lib -L/bgsys/drivers/ppcfloor/spi/lib"
-#define EL_MPI_C_LIBRARIES     "-L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/sys/lib -L/bgsys/drivers/ppcfloor/spi/lib   -lmpich-gcc -lopa-gcc -lmpl-gcc -lpami-gcc -lSPI -lSPI_cnk -lrt -lpthread -lstdc++ -lpthread"
+#define EL_MPI_C_LIBRARIES     "-L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/spi/lib   -lmpich-xl -lopa-xl -lmpl-xl -lpami-gcc -lSPI -lSPI_cnk -lrt -lpthread -lstdc++ -lpthread"
 
 /* C++ compiler info */
 #define EL_CMAKE_CXX_COMPILER    "/home/projects/llvm/wbin/bgclang++11"
-#define EL_CXX_FLAGS             "-O3 -std=c++11 "
+#define EL_CXX_FLAGS             "-g -O3 -std=c++11 "
 #define EL_MPI_CXX_COMPILER      "/home/projects/llvm/mpi/bgclang/bin/mpiclang++11"
 #define EL_MPI_CXX_INCLUDE_PATH  "/bgsys/drivers/ppcfloor/comm/include"
 #define EL_MPI_CXX_COMPILE_FLAGS ""
-#define EL_MPI_CXX_LINK_FLAGS    "-L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/sys/lib -L/bgsys/drivers/ppcfloor/spi/lib"
-#define EL_MPI_CXX_LIBRARIES     "-L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/sys/lib -L/bgsys/drivers/ppcfloor/spi/lib -lmpichcxx-gcc -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/sys/lib -L/bgsys/drivers/ppcfloor/spi/lib   -lmpich-gcc -lopa-gcc -lmpl-gcc -lpami-gcc -lSPI -lSPI_cnk -lrt -lpthread -lstdc++ -lpthread"
+#define EL_MPI_CXX_LIBRARIES     "-L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/spi/lib -lmpichcxx-xl -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/comm/lib -L/bgsys/drivers/ppcfloor/spi/lib   -lmpich-xl -lopa-xl -lmpl-xl -lpami-gcc -lSPI -lSPI_cnk -lrt -lpthread -lstdc++ -lpthread"
 
 /* Math libraries */
-#define EL_MATH_LIBS "-L/soft/libraries/essl/current/essl/5.1/lib64 -lesslbg -L/soft/libraries/alcf/current/xl/LAPACK/lib -llapack -L/soft/libraries/essl/current/essl/5.1/lib64 -lesslbg -L/soft/compilers/ibmcmp-aug2014/xlf/bg/14.1/bglib64 -lxlf90_r -L/soft/compilers/ibmcmp-aug2014/xlsmp/bg/3.1/bglib64 -lxlomp_ser -lxlopt -lxlfmath -lxl -lpthread -ldl -Wl,--allow-multiple-definition"
+#define EL_MATH_LIBS "-L/soft/libraries/alcf/current/xl/SCALAPACK/lib -lscalapack -L/soft/libraries/alcf/current/xl/LAPACK/lib -llapack -L/soft/libraries/essl/current/essl/5.1/lib64 -lesslbg -L/soft/compilers/ibmcmp-nov2014/xlmass/bg/7.3/bglib64 -lmassv -lmass -L/soft/compilers/ibmcmp-nov2014/xlf/bg/14.1/bglib64 -lxlf90_r -L/soft/compilers/ibmcmp-nov2014/xlsmp/bg/3.1/bglib64 -lxlomp_ser -lxlopt -lxlfmath -lxl -lpthread -ldl -Wl,--allow-multiple-definition"
 /* #undef EL_BLAS_POST */
 /* #undef EL_LAPACK_POST */
-/* #undef EL_HAVE_SCALAPACK */
+#define EL_HAVE_SCALAPACK
 /* #undef EL_SCALAPACK_POST */
 /* #undef EL_HAVE_FLA_BSVD */
 #define EL_FORT_LOGICAL int
@@ -66,18 +66,25 @@
 #define EL_USE_BYTE_ALLGATHERS
 /* #undef EL_USE_64BIT_INTS */
 
+/* Sparse-direct configuration */
+#define EL_USE_CUSTOM_ALLTOALLV
+/* #undef EL_BARRIER_IN_ALLTOALLV */
+/* #undef EL_HAVE_METIS */
+/* #undef EL_HAVE_PARMETIS */
+
 /* Advanced configuration options */
 /* #undef EL_ZERO_INIT */
 /* #undef EL_CACHE_WARNINGS */
 /* #undef EL_UNALIGNED_WARNINGS */
 /* #undef EL_VECTOR_WARNINGS */
-/* #undef EL_POOL_MEMORY */
 /* #undef EL_AVOID_OMP_FMA */
 
-/* NOTE: Only EL_DISABLE_FLOAT has been tested so far */
-/* #undef EL_DISABLE_FLOAT */
-/* #undef EL_DISABLE_DOUBLE */
-/* #undef EL_DISABLE_COMPLEX */
+/* #undef EL_DECLSPEC */
+#ifdef EL_DECLSPEC
+# define EL_EXPORT __declspec(dllexport)
+#else
+# define EL_EXPORT
+#endif
 
 /* #undef EL_HAVE_VALGRIND */
 
