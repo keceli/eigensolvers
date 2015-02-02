@@ -14,10 +14,10 @@ int main( int argc, char* argv[] )
   try
   {
       std::string filename="";
-      std::string filenameA = Input("--filenameA","file name ",std::string(""));
-      std::string filenameB = Input("--filenameB","file name ",std::string(""));
-      const double vl       = Input("--vl","local limit ",-0.8);
-      const double vu       = Input("--vu","upper limit ",0.2);
+      std::string filenameA = Input("-A","file name ",std::string(""));
+      std::string filenameB = Input("-B","file name ",std::string(""));
+      const double vl       = Input("-l","local limit ",-0.8);
+      const double vu       = Input("-u","upper limit ",0.2);
       const int localGroupSize       = Input("--lgs","local group size",2);
 
       if(filenameA == "" or filenameB == "")
@@ -30,6 +30,24 @@ int main( int argc, char* argv[] )
       ProcessInput();
 
       Grid g( comm );
+      // Split the group for MPI_COMM_WORLD into a smaller group
+      // ==================================================================
+      mpi::Group group;
+      mpi::CommGroup( comm, group );
+      std::vector<int> ranks(localGroupSize);
+      // Form the local group
+      mpi::Group localGroup;
+      for( int q=0; q<localGroupSize; ++q )
+	ranks[q] = q;
+      mpi::Incl( group, localGroupSize, ranks.data(), localGroup );
+
+      // Form the local grid
+      // ==============================
+      int localGridHeight = Grid::FindFactor( localGroupSize );
+      Grid lg( comm, localGroup, localGridHeight );
+
+
+
       DistMatrix<double> A( g );
       DistMatrix<double> B( g );
       std::string eigenfile = "eig_" + filename + std::to_string(g.Size());
@@ -70,6 +88,7 @@ int main( int argc, char* argv[] )
 	  std::cout.flush();
 	}
 
+
       Pencil pencil;
       pencil = AXBX;
 
@@ -83,21 +102,7 @@ int main( int argc, char* argv[] )
       subset.upperBound = vu;
 
 
-      // Split the group for MPI_COMM_WORLD into a smaller group
-      // ==================================================================
-      mpi::Group group;
-      mpi::CommGroup( comm, group );
-      std::vector<int> ranks(localGroupSize);
-      // Form the local group
-      mpi::Group localGroup;
-      for( int q=0; q<localGroupSize; ++q )
-	ranks[q] = q;
-      mpi::Incl( group, localGroupSize, ranks.data(), localGroup );
 
-      // Form the local grid
-      // ==============================
-      int localGridHeight = Grid::FindFactor( localGroupSize );
-      Grid lg( comm, localGroup, localGridHeight );
 
       if( lg.Rank() == 0 )
 	{
@@ -111,6 +116,8 @@ int main( int argc, char* argv[] )
       DistMatrix<double> X(lg),lA( lg ),lB( lg );
       lA=A;
       lB=B;
+      mpi::Barrier( comm );
+
       //HermitianGenDefEig( eigType, uplo, A, B, w,vl,vu, sort );//without eigenvectors
       HermitianGenDefEig( pencil, uplo, lA, lB, w,X, sort,subset,ctrl );
       mpi::Barrier(lg.Comm() );

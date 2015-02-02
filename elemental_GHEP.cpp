@@ -11,8 +11,10 @@ int main( int argc, char* argv[] )
 	try
 	{
 	    std::string filename="";
-	    std::string filenameA = Input("--filenameA","file name ",std::string(""));
-	    std::string filenameB = Input("--filenameB","file name ",std::string(""));
+	      std::string filenameA = Input("-A","file name ",std::string(""));
+	      std::string filenameB = Input("-B","file name ",std::string(""));
+	      const double vl       = Input("-l","local limit ",-0.8);
+	      const double vu       = Input("-u","upper limit ",0.2);
 		if(filenameA == "" or filenameB == "")
 		{
 			filename= Input("--filename","file name ",std::string(""));
@@ -41,8 +43,8 @@ int main( int argc, char* argv[] )
 		}
 		else
 		{
-			OneTwoOne( A, n );
-		//	HermitianUniformSpectrum( A, n );
+		//	OneTwoOne( A, n );
+			HermitianUniformSpectrum( A, n );
 			Identity( B, n, n );
 		}
 		mpi::Barrier( g.Comm() );
@@ -52,15 +54,11 @@ int main( int argc, char* argv[] )
 		{
 			if (n==1) std::cout << filenameA << " , "<< filenameB << " was read in (s): " << t1-t0 << std::endl;
 			std::cout << "  Matrix heights: " << A.Height()<< " , "<< B.Height() << std::endl;
-		//	std::cout << "  Block size: " << A.BlockSize()<< std::endl;
 			std::cout << "  Memory size: " << A.AllocatedMemory()<< std::endl;
 			std::cout << "  Redundant size: " << A.RedundantSize()<< std::endl;
 			std::cout.flush();
 		}
-		const double vl = -0.8;
-		const double vu = 0.2;
-	//	HermitianGenDefEigType eigType;
-	//	eigType = AXBX;
+
 		Pencil pencil;
 		pencil = AXBX;
 		DistMatrix<Real,VR,STAR> w( g );
