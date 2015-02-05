@@ -21,7 +21,6 @@ int main( int argc, char* argv[] )
 		Grid g( mpi::COMM_WORLD );
 		DistMatrix<double> A( g );
 		DistMatrix<double> B( g );
-		std::string eigenfile = "eig_" + filenameA +  std::to_string(g.Size())+ "." +FileExtension(ASCII);
 
 		double t0=mpi::Time();
 		if(n==1)
@@ -33,14 +32,15 @@ int main( int argc, char* argv[] )
 		{
 
 		//	OneTwoOne( A, n );
-		  HermitianUniformSpectrum( A, n, -0.9, 3 );
+		  HermitianUniformSpectrum( A, n, 1, 100 );
+		  HermitianUniformSpectrum( B, n, 1, 100 );
 		//	Identity( B, n, n );
       // Because we will multiply by L three times, generate HPD B more 
       // carefully than just adding m to its diagonal entries.
-      Zeros( B, n, n );
-      DistMatrix<double> C(g);
-      Uniform( C, n, n );
-      Herk( uplo, ADJOINT, Real(1), C, Real(0), B );
+    //  Zeros( B, n, n );
+    //  DistMatrix<double> C(g);
+    //  Uniform( C, n, n );
+    //  Herk( uplo, ADJOINT, Real(100), C, Real(0), B );
 		}
 		mpi::Barrier( g.Comm() );
 		double t1=mpi::Time();
@@ -92,6 +92,9 @@ int main( int argc, char* argv[] )
 		}
 		  //  std::string eigfilename = "myeigs." + FileExtension(ASCII);
 		  //  std::ofstream file( eigfilename.c_str() );
+		  std::string eigenfile = "eig." + std::to_string(A.Height())+"." + std::to_string(g.Size())+ "." +FileExtension(ASCII);
+      if (n==1) std::string eigenfile = "eig." + filenameA +"." + std::to_string(g.Size())+ "." +FileExtension(ASCII);
+
 		  std::ofstream file( eigenfile );
 		  if( !file.is_open() ) RuntimeError("Could not open ",eigenfile);
 
